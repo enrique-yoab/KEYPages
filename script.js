@@ -1,6 +1,6 @@
 /**
  * KEYpages — script.js
- * Lógica Vanilla JS altamente optimizada.
+ * Lógica Vanilla JS altamente optimizada. Ruleta 100% Responsiva.
  */
 document.addEventListener("DOMContentLoaded", () => {
     "use strict";
@@ -29,25 +29,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     revealElements.forEach(el => revealObserver.observe(el));
 
-    // --- 3. RULETA DE CASINO (Navegación Circular Responsiva) ---
+    // --- 3. RULETA DE CASINO (Navegación Circular Elástica) ---
     const roulette = document.getElementById('menu-roulette');
     if (roulette) {
         const items = roulette.querySelectorAll('.roulette-item');
         const totalItems = items.length;
-        
-        // Radio dinámico: Más pequeño en celulares para evitar desbordes
-        const radius = window.innerWidth < 450 ? 120 : 160; 
         let currentRotation = 0;
         let activeIndex = 0;
 
-        // Posicionar elementos en círculo
+        // Función para posicionar elementos con radio verdaderamente dinámico
         const positionItems = () => {
+            const screenWidth = window.innerWidth;
+            let radius = 160; // Desktop
+            
+            // Ajuste hiper-dinámico para evitar desbordes
+            if (screenWidth < 380) {
+                radius = 95; // Pantallas muy pequeñas (ej. iPhone SE)
+            } else if (screenWidth < 480) {
+                radius = 125; // Celulares estándar
+            }
+
             items.forEach((item, index) => {
                 const angle = (index / totalItems) * (2 * Math.PI);
                 const x = Math.round(radius * Math.sin(angle));
                 const y = Math.round(-radius * Math.cos(angle));
                 
-                item.style.transform = `translate(${x}px, ${y}px)`;
+                // Mantenemos la contra-rotación actual si se redimensiona la pantalla
+                item.style.transform = `translate(${x}px, ${y}px) rotate(${-currentRotation}deg)`;
             });
         };
 
@@ -69,9 +77,10 @@ document.addEventListener("DOMContentLoaded", () => {
             requestAnimationFrame(() => {
                 roulette.style.transform = `rotate(${currentRotation}deg)`;
                 
-                // Contrarrestar la rotación para que el texto siga derecho
+                // Contrarrestar la rotación para que el texto siempre se lea derecho
                 items.forEach(item => {
-                    const currentTransform = item.style.transform.replace(/rotate\(.*?\)/g, ''); 
+                    // Limpiamos la rotación anterior y aplicamos la nueva
+                    const currentTransform = item.style.transform.replace(/rotate\(.*?\)/g, '').trim(); 
                     item.style.transform = `${currentTransform} rotate(${-currentRotation}deg)`;
                 });
             });
@@ -80,12 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('btn-spin-left').addEventListener('click', () => updateRoulette('left'));
         document.getElementById('btn-spin-right').addEventListener('click', () => updateRoulette('right'));
 
-        // Recalcular si voltean el celular
+        // Recalcular el radio exacto si el usuario gira o voltea el celular
         window.addEventListener('resize', () => {
             requestAnimationFrame(positionItems);
         });
 
-        // Inicializar
+        // Inicialización
         positionItems();
     }
 });
