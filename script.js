@@ -200,7 +200,14 @@
           line.type === 'success' ? ' terminal__line--success' : ''
         }`;
 
+        // 1. Anulamos el delay de CSS para que JS controle el tiempo
+        p.style.animationDelay = '0s';
+        p.style.opacity = '1';
+
         if (line.type === 'cmd') {
+          // 2. Quitamos el fade-in para el efecto de typing
+          p.style.animation = 'none'; 
+          
           const prompt = document.createElement('span');
           prompt.className = 'terminal__prompt';
           prompt.textContent = '$ ';
