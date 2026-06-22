@@ -8,6 +8,7 @@
 
 :root {
     --hero-top: 10vh;
+    --ancho-bloque: 1200px;
 }
 
 html, body {
@@ -25,6 +26,10 @@ html, body {
     top: 0; left: 0;
     width: 100%; height: 100%;
     z-index: 0;
+    
+    /* OPTIMIZACIÓN: Aislar en su propia capa de GPU */
+    will-change: transform;
+    transform: translateZ(0); 
 }
 
 /* ════════════════════════════════════════
@@ -157,15 +162,18 @@ main {
 
 .hero-header {
     width: 100%;
-    height: clamp(200px, 45vh, 400px);
+    /* 1. Cambiamos la altura fija por 'auto' para evitar huecos fantasma */
+    height: auto; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     padding-top: var(--hero-top);
+    /* 2. AQUÍ CONTROLAS LA SEPARACIÓN INFERIOR */
+    padding-bottom: var(--hero-top); /* <--- Reduce o aumenta este valor (ej. 2vh, 40px, etc.) */
+
     gap: 20px;
 }
-
 .hero-header::before {
     content: '// SYSTEM.BOOT ██ ID:KPG-01';
     font-family: 'Share Tech Mono', monospace;
@@ -183,12 +191,20 @@ main {
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     font-family: 'Orbitron', monospace;
     font-size: clamp(2rem, 8.5vw, 8rem);
     font-weight: 900;
     letter-spacing: clamp(4px, 0.8vw, 14px);
     text-transform: uppercase;
     line-height: 1;
+    min-height: 1.2em; 
+    min-width: 7em;    
+    
+    /* OPTIMIZACIÓN: Avisar al navegador qué va a cambiar */
+    will-change: transform, filter;
+    transform: translateZ(0);
+    
     text-shadow:
         0 0 4px  rgba(255, 94, 0, 1),
         0 0 14px rgba(255, 94, 0, 0.8),
@@ -408,27 +424,279 @@ main {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 40px; /* Altura del footer */
+    height: 40px;
     display: flex;
     align-items: center;
-    justify-content: center; /* Centra el texto horizontalmente */
-    
-    /* Mismo fondo translúcido que el header */
+    justify-content: center;
+    gap: 12px;
+
     background: rgba(15, 5, 0, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    
-    /* Borde brillante en la parte superior */
+
     border-top: 1px solid rgba(255, 94, 0, 0.35);
     box-shadow: 0 -2px 15px rgba(255, 94, 0, 0.1);
     z-index: 100;
+    padding: 0 20px;
 }
 
 .neon-footer p {
-    font-family: 'Share Tech Mono', monospace; /* Fuente de terminal */
-    font-size: clamp(8px, 1vw, 10px);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(7px, 0.9vw, 10px);
     color: rgba(255, 94, 0, 0.4);
     letter-spacing: 2px;
     text-transform: uppercase;
     margin: 0;
+    white-space: nowrap;
+}
+
+.footer-divider {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(7px, 0.9vw, 10px);
+    color: rgba(255, 94, 0, 0.25);
+    letter-spacing: 2px;
+    user-select: none;
+}
+
+.footer-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: rgba(255, 94, 0, 0.5);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(7px, 0.9vw, 10px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.footer-github:hover {
+    color: #ff5e00;
+    text-shadow: 0 0 8px rgba(255, 94, 0, 0.6);
+}
+
+.github-icon {
+    width: clamp(12px, 1.2vw, 15px);
+    height: clamp(12px, 1.2vw, 15px);
+    fill: rgba(255, 94, 0, 0.5);
+    flex-shrink: 0;
+    transition: fill 0.2s ease, filter 0.2s ease;
+}
+
+.footer-github:hover .github-icon {
+    fill: #ff5e00;
+    filter: drop-shadow(0 0 6px rgba(255, 94, 0, 0.8));
+}
+
+@media (max-width: 480px) {
+    .footer-divider { display: none; }
+    .footer-github span { display: none; }
+    .github-icon {
+        width: 14px;
+        height: 14px;
+        fill: rgba(255, 94, 0, 0.5);
+    }
+}
+
+/* ════════════════════════════════════════
+   BLOQUES INFORMATIVOS Y CONTENIDO
+   ════════════════════════════════════════ */
+.bloque-global {
+    width: 100%;
+    max-width: var(--ancho-bloque);
+    margin: 0 auto;
+    padding: 20px 20px; /* Padding inferior extra por el footer */
+    display: flex;
+    flex-direction: column;
+    gap: 80px; /* Separación entre cada bloque informativo */
+}
+
+.bloque-informativo {
+    display: flex;
+    gap: 50px;
+    align-items: center; /* Centra verticalmente el texto y la terminal */
+}
+
+/* ── Apartado Textual ── */
+.apartado-textual {
+    flex: 1; /* Toma la mitad del espacio */
+}
+
+.cyber-subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    color: #ff5e00;
+    text-shadow: 0 0 12px rgba(255, 94, 0, 0.5);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    border-left: 3px solid #ff5e00;
+    padding-left: 12px;
+}
+
+.apartado-textual p {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.apartado-textual strong {
+    color: #ff5e00;
+    text-shadow: 0 0 8px rgba(255, 94, 0, 0.4);
+}
+
+/* ── Apartado Terminal ── */
+.apartado-terminal {
+    flex: 1; /* Toma la otra mitad del espacio */
+    background: rgba(8, 3, 0, 0.85);
+    border: 1px solid rgba(255, 94, 0, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(255, 94, 0, 0.1), inset 0 0 20px rgba(255, 94, 0, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: rgba(255, 94, 0, 0.1);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 94, 0, 0.2);
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+    width: 60px; /* Fija un ancho para mantener centrado el título */
+}
+
+.terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+/* Colores estilo ventana con tonos que combinan con el naranja */
+.btn-close { background: #ff3300; }
+.btn-min   { background: #ff9900; }
+.btn-max   { background: rgba(255, 255, 255, 0.4); }
+
+.terminal-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(255, 94, 0, 0.6);
+    letter-spacing: 1px;
+    margin-right: 60px; /* Compensa el ancho de los botones para centrar perfecto */
+}
+
+.terminal-body {
+    padding: 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(12px, 1vw, 14px);
+    line-height: 1.6;
+}
+
+.terminal-prompt {
+    color: #ff5e00;
+    margin-right: 8px;
+    text-shadow: 0 0 5px rgba(255, 94, 0, 0.5);
+}
+
+.terminal-command {
+    color: #ffffff;
+}
+
+.terminal-output {
+    color: rgba(255, 255, 255, 0.4);
+    display: block;
+    margin-bottom: 12px;
+    margin-top: 2px;
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: #ff5e00;
+    vertical-align: middle;
+    animation: terminal-blink 1s step-end infinite;
+    box-shadow: 0 0 8px rgba(255, 94, 0, 0.8);
+}
+
+@keyframes terminal-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ── Responsividad (Móviles) ── */
+@media (max-width: 860px) {
+    .bloque-informativo {
+        flex-direction: column; /* Apila el texto arriba y la terminal abajo */
+        gap: 30px;
+    }
+    
+    .apartado-terminal {
+        width: 100%; /* La terminal ocupa todo el ancho disponible */
+    }
+}
+
+/* ════════════════════════════════════════
+   OPTIMIZACIÓN DE RENDIMIENTO (GPU)
+   ════════════════════════════════════════ */
+.render-paused,
+.render-paused * {
+    /* Detiene el glitch global, el parpadeo y el cursor */
+    animation: none !important; 
+    /* Elimina los desenfoques pesados de la GPU */
+    filter: none !important;
+}
+
+/* ════════════════════════════════════════
+   OPTIMIZACIÓN EXTREMA PARA MÓVILES (Evitar lag)
+   ════════════════════════════════════════ */
+@media (max-width: 768px) {
+    /* Quitar el blur de las letras, es letal para móviles */
+    .glitch-char {
+        filter: none !important; 
+        text-shadow:
+            -3px 0 rgba(255, 0, 0, 0.85),  
+             3px 0 rgba(255, 200, 0, 0.85), 
+             0 0 15px rgba(255, 255, 255, 0.9);
+    }
+
+    /* Reducir las capas de brillo general del título */
+    #typing-container {
+        text-shadow:
+            0 0 4px  rgba(255, 94, 0, 1),
+            0 0 20px rgba(255, 94, 0, 0.5);
+    }
+
+    /* Sobrescribir el glitch global por uno sin filtros costosos */
+    @keyframes neon-global-glitch {
+        0%,  91%, 94%, 100% {
+            transform: none;
+            filter: none;
+            clip-path: none;
+        }
+        92% {
+            /* Solo movemos e inclinamos, sin clip-path ni blur */
+            transform: translate(-3px, 0) skewX(4deg);
+            filter: hue-rotate(20deg);
+        }
+        92.5% {
+            transform: translate(3px, 0) skewX(-3deg);
+            filter: none;
+        }
+        93% {
+            transform: translate(-1px, 1px);
+            filter: hue-rotate(-20deg);
+        }
+    }
 }
