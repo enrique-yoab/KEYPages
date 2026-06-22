@@ -9,6 +9,11 @@
 :root {
     --hero-top: 10vh;
     --ancho-bloque: 1200px;
+
+    /* ── Distancia entre el logo y la franja divisoria vertical ──
+       Aumenta este valor para alejar la línea del texto del logo.
+       Disminúyelo para acercarla. Solo afecta a pantallas > 640px. */
+    --logo-divider-gap: 40px;
 }
 
 html, body {
@@ -60,22 +65,6 @@ html, body {
     z-index: 100;
 }
 
-/* Esquina decorativa — línea diagonal derecha del logo */
-.neon-header::after {
-    content: '';
-    position: absolute;
-    left: 190px;
-    top: 12px; bottom: 12px;
-    width: 1px;
-    background: linear-gradient(
-        180deg,
-        transparent,
-        rgba(255, 94, 0, 0.5) 40%,
-        rgba(255, 94, 0, 0.5) 60%,
-        transparent
-    );
-}
-
 /* ── Logo ── */
 .logo {
     font-family: 'Orbitron', sans-serif;
@@ -90,7 +79,28 @@ html, body {
         0 0 40px rgba(255, 94, 0, 0.25);
     user-select: none;
     white-space: nowrap;
-    padding-right: 32px;
+    
+    /* ── AJUSTES PARA CONTROLAR LA FRANJA ── */
+    position: relative; 
+    padding-right: var(--logo-divider-gap); /* Controlado desde :root → --logo-divider-gap */
+}
+
+/* ── Nueva línea divisoria atada al logo ── */
+.logo::after {
+    content: '';
+    position: absolute;
+    right: 0; /* Se pega al límite del padding-right */
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px; /* Altura de la línea */
+    width: 1px;
+    background: linear-gradient(
+        180deg,
+        transparent,
+        rgba(255, 94, 0, 0.5) 40%,
+        rgba(255, 94, 0, 0.5) 60%,
+        transparent
+    );
 }
 
 /* ── Nav links ── */
@@ -413,7 +423,10 @@ main {
     .neon-header nav { display: none; }
     .hamburger { display: flex; }
     .mobile-menu { display: flex; }
-    .neon-header::after { display: none; }
+    
+    /* Ocultamos la franja dinámica en móviles */
+    .logo::after { display: none; } 
+    .logo { padding-right: 0; }
 }
 
 /* ════════════════════════════════════════
