@@ -11,10 +11,10 @@ const NEON_COLORS = ['#ff6a00', '#ffb300', '#00e5ff'];
 // ── Control de renderizado asíncrono ──
 let lastTime = 0;
 const TARGET_FPS = 60;
-const FRAME_MS  = 1000 / TARGET_FPS;
+const FRAME_MS = 1000 / TARGET_FPS;
 
 function resizeCanvas() {
-    canvas.width  = window.innerWidth;
+    canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     initSystem();
 }
@@ -121,8 +121,12 @@ function animate(timestamp) {
     const dt = Math.min(elapsed, 100) / FRAME_MS;
     lastTime = timestamp;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    /* 🔴 CORRECCIÓN DEL GLITCH: En lugar de ctx.clearRect, pintamos un 
+       fondo semi-transparente que amortigua los picos de scroll del navegador */
+    ctx.fillStyle = 'rgba(5, 8, 16, 0.35)'; /* Mismo color exacto de tu --bg-main */
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // El resto de tu función se queda exactamente igual
     stars.forEach(s => { s.update(dt); s.draw(); });
     meteors.forEach(m => { m.update(dt); m.draw(); });
     particles.forEach(p => { p.update(dt); p.draw(); });
@@ -197,7 +201,7 @@ function runPassiveGlitch() {
     const glitchDurationMs = Math.random() > 0.7 ? 300 : 120;
     const numberOfGlitchChars = Math.random() > 0.85 ? currentText.length : Math.min(currentText.length, Math.floor(Math.random() * 3) + 2);
     const glitchIndices = new Set();
-    
+
     while (glitchIndices.size < numberOfGlitchChars) glitchIndices.add(Math.floor(Math.random() * currentText.length));
 
     const corruptText = currentText.split('');
@@ -297,15 +301,15 @@ const headerLogo = document.querySelector('.neon-header .logo');
 if (headerLogo) {
     const LOGO_TEXT = "KEYpagine";
     const LOGO_GLITCH_CHARS = '█▓▒░▄▀■□▪▫◆◇○●0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&?<>[]{}|/\\^*+-=_~';
-    
+
     headerLogo.innerHTML = '';
     const logoSpans = [];
-    
+
     // Inyección de nodos y protección del color base
     for (let i = 0; i < LOGO_TEXT.length; i++) {
         const span = document.createElement('span');
         span.textContent = LOGO_TEXT[i];
-        
+
         if (i < 3) {
             // "KEY" en ámbar dorado — análogo del naranja, mayor jerarquía visual
             span.style.color = '#ffb300';
@@ -315,7 +319,7 @@ if (headerLogo) {
             span.style.color = '#ff6a00';
             span.style.textShadow = '0 0 10px rgba(255, 106, 0, 0.45)';
         }
-        
+
         headerLogo.appendChild(span);
         logoSpans.push(span);
     }
